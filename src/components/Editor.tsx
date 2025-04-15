@@ -25,37 +25,15 @@ export function Editor() {
 function EditorContent() {
   const editor = useEditor();
 
-  const { data: snapshot, isLoading } = trpc.getDocument.useQuery();
   const saveDoc = trpc.saveDocument.useMutation();
+  const { data: snapshot, isLoading, error } = trpc.getDocument.useQuery();
 
   useEffect(() => {
-    if (snapshot && snapshot.store && editor && !isLoading) {
+    if (error) {
+    } else if (snapshot && editor && !isLoading) {
       loadSnapshot(editor.store, snapshot as TLStoreSnapshot);
     }
-  }, [snapshot, editor, isLoading]);
-
-  useEffect(() => {
-    if (editor && !isLoading) {
-      const shapes = editor.getCurrentPageShapes();
-      if (shapes.length === 0) {
-        editor.createShape({
-          id: "shape:1" as any,
-          type: "geo",
-          x: 100,
-          y: 100,
-          props: {
-            geo: "rectangle",
-            w: 200,
-            h: 100,
-            color: "blue",
-            size: "m",
-            dash: "draw",
-            fill: "solid",
-          },
-        });
-      }
-    }
-  }, [editor, isLoading]);
+  }, [snapshot, editor, isLoading, error]);
 
   useEffect(() => {
     if (!editor) return;

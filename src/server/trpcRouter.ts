@@ -1,16 +1,19 @@
-import { z } from "zod";
 import { publicProcedure, router } from "./trpcServer";
+import { z } from "zod";
 
-let documentStore: any = {};
+let storedSnapshot = {};
 
 export const appRouter = router({
   getDocument: publicProcedure.query(() => {
-    return documentStore;
+    return storedSnapshot;
   }),
-  saveDocument: publicProcedure.input(z.any()).mutation(({ input }) => {
-    documentStore = input;
-    return { success: true };
-  }),
+
+  saveDocument: publicProcedure
+    .input(z.record(z.any()))
+    .mutation(({ input }) => {
+      storedSnapshot = input;
+      return { success: true };
+    }),
 });
 
 export type AppRouter = typeof appRouter;
