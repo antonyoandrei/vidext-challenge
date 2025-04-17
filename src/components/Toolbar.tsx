@@ -25,7 +25,7 @@ import {
   IconZoomScan,
   IconZoomInArea,
 } from "@tabler/icons-react";
-import { useEditor } from "@tldraw/tldraw";
+import { useEditor, useValue } from "@tldraw/tldraw";
 import { useEffect, useState } from "react";
 import { StylesPanel } from "./StylesPanel";
 import { PagesMenu } from "./PagesMenu";
@@ -33,6 +33,12 @@ import { PagesMenu } from "./PagesMenu";
 export function Toolbar() {
   const editor = useEditor();
   const [openStyles, setOpenStyles] = useState(false);
+
+  const currentTool = useValue(
+    "current tool",
+    () => editor.getCurrentToolId(),
+    [editor]
+  );
 
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
@@ -85,7 +91,7 @@ export function Toolbar() {
       </div>
       <div className="flex items-center space-x-2">
         <Button
-          variant={editor.getCurrentToolId() === "select" ? "default" : "ghost"}
+          variant={currentTool === "select" ? "default" : "ghost"}
           size="icon"
           onClick={() => {
             editor.selectNone();
@@ -95,7 +101,7 @@ export function Toolbar() {
           <IconPointer />
         </Button>
         <Button
-          variant={editor.getCurrentToolId() === "hand" ? "default" : "ghost"}
+          variant={currentTool === "hand" ? "default" : "ghost"}
           size="icon"
           onClick={() => {
             editor.selectNone();
@@ -105,7 +111,7 @@ export function Toolbar() {
           <IconHandStop />
         </Button>
         <Button
-          variant={editor.getCurrentToolId() === "draw" ? "default" : "ghost"}
+          variant={currentTool === "draw" ? "default" : "ghost"}
           size="icon"
           onClick={() => {
             editor.selectNone();
@@ -115,7 +121,7 @@ export function Toolbar() {
           <IconPencil />
         </Button>
         <Button
-          variant={editor.getCurrentToolId() === "eraser" ? "default" : "ghost"}
+          variant={currentTool === "eraser" ? "default" : "ghost"}
           size="icon"
           onClick={() => {
             editor.selectNone();
@@ -125,7 +131,7 @@ export function Toolbar() {
           <IconEraser />
         </Button>
         <Button
-          variant={editor.getCurrentToolId() === "text" ? "default" : "ghost"}
+          variant={currentTool === "text" ? "default" : "ghost"}
           size="icon"
           onClick={() => {
             editor.selectNone();
@@ -135,7 +141,7 @@ export function Toolbar() {
           <IconTypography />
         </Button>
         <Button
-          variant={editor.getCurrentToolId() === "geo" ? "default" : "ghost"}
+          variant={currentTool === "geo" ? "default" : "ghost"}
           size="icon"
           onClick={() => {
             editor.selectNone();
