@@ -171,13 +171,13 @@ export function Toolbar() {
           <PopoverContent align="end" className="w-48 space-y-2">
             <div className="flex flex-col gap-2">
               <Button size="sm" onClick={() => editor.zoomIn()}>
-                <IconZoomIn className="w-4 h-4 mr-1" /> Acercar
+                <IconZoomIn className="w-4 h-4 mr-1" /> Zoom in
               </Button>
               <Button size="sm" onClick={() => editor.zoomOut()}>
-                <IconZoomOut className="w-4 h-4 mr-1" /> Alejar
+                <IconZoomOut className="w-4 h-4 mr-1" /> Zoom out
               </Button>
               <Button size="sm" onClick={() => editor.zoomToFit()}>
-                <IconZoomScan className="w-4 h-4 mr-1" /> Ajustar pantalla
+                <IconZoomScan className="w-4 h-4 mr-1" /> Zoom to fit
               </Button>
               <Button
                 size="sm"
@@ -188,7 +188,7 @@ export function Toolbar() {
                   }
                 }}
               >
-                <IconZoomInArea className="w-4 h-4 mr-1" /> Foco selección
+                <IconZoomInArea className="w-4 h-4 mr-1" /> Focus on selection
               </Button>
             </div>
           </PopoverContent>

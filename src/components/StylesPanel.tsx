@@ -145,6 +145,7 @@ export function StylesPanel({ editor }: { editor: Editor }) {
 
   const formatLabel = (shape: string) => {
     return shape
+      .replace(/-/g, " ")
       .replace(/([A-Z])/g, " $1")
       .replace(/^./, (s) => s.toUpperCase());
   };
