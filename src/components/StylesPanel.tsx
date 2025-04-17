@@ -15,7 +15,9 @@ import type {
   TLDefaultDashStyle,
   TLDefaultSizeStyle,
   TLDefaultFontStyle,
+  TLGeoShape,
 } from "@tldraw/tldraw";
+import { GeoShapeGeoStyle } from "@tldraw/tldraw";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -48,43 +50,44 @@ import { JSX, useEffect, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import React from "react";
 
-const SHAPE_ICONS: Record<string, JSX.Element> = {
+type GeoKeys =
+  | "rectangle"
+  | "oval"
+  | "triangle"
+  | "diamond"
+  | "star"
+  | "pentagon"
+  | "hexagon"
+  | "octagon"
+  | "arrow-left"
+  | "arrow-up"
+  | "arrow-down"
+  | "arrow-right"
+  | "cloud"
+  | "x-box"
+  | "check-box"
+  | "heart";
+
+const SHAPE_ICONS: Record<GeoKeys, JSX.Element> = {
   rectangle: <IconSquare />,
-  ellipse: <IconCircle />,
+  oval: <IconCircle />,
   triangle: <IconTriangle />,
   diamond: <IconSquareRotated />,
   star: <IconStar />,
   pentagon: <IconPentagon />,
   hexagon: <IconHexagon />,
   octagon: <IconOctagon />,
-  arrowLeft: <IconArrowBigLeft />,
-  arrowUp: <IconArrowBigUp />,
-  arrowDown: <IconArrowBigDown />,
-  arrowRight: <IconArrowBigRight />,
+  "arrow-left": <IconArrowBigLeft />,
+  "arrow-up": <IconArrowBigUp />,
+  "arrow-down": <IconArrowBigDown />,
+  "arrow-right": <IconArrowBigRight />,
   cloud: <IconCloud />,
-  boxX: <IconSquareX />,
-  boxCheck: <IconSquareCheck />,
+  "x-box": <IconSquareX />,
+  "check-box": <IconSquareCheck />,
   heart: <IconHeart />,
 };
 
-const SHAPES_PRESETS = [
-  "rectangle",
-  "ellipse",
-  "triangle",
-  "diamond",
-  "star",
-  "pentagon",
-  "hexagon",
-  "octagon",
-  "arrowLeft",
-  "arrowUp",
-  "arrowDown",
-  "arrowRight",
-  "cloud",
-  "boxX",
-  "boxCheck",
-  "heart",
-];
+const SHAPES_PRESETS = Object.keys(SHAPE_ICONS) as GeoKeys[];
 
 const COLOR_PRESETS: TLDefaultColorStyle[] = [
   "black",
@@ -125,8 +128,17 @@ export function StylesPanel({ editor }: { editor: Editor }) {
   const [open, setOpen] = useState(false);
   const [lastShape, setLastShape] = useState("rectangle");
 
-  const handleSelect = (shape: string) => {
-    editor.setCurrentTool("geo");
+  const handleSelect = (shape: TLGeoShape["props"]["geo"]) => {
+    editor.setCurrentTool("geo", { oneShot: false });
+    editor.setStyleForNextShapes(GeoShapeGeoStyle, shape);
+    editor.setCurrentTool("geo", { oneShot: false });
+
+    if (editor.getSelectedShapeIds().length > 0) {
+      editor.setCurrentTool("select", { oneShot: false });
+      editor.setStyleForSelectedShapes(GeoShapeGeoStyle, shape);
+    } else {
+      editor.setStyleForNextShapes(GeoShapeGeoStyle, shape);
+    }
     setLastShape(shape);
     setOpen(false);
   };
@@ -257,7 +269,7 @@ export function StylesPanel({ editor }: { editor: Editor }) {
             <PopoverTrigger asChild>
               <button className="w-full px-3 py-2 flex items-center justify-between border rounded">
                 <span>{formatLabel(lastShape)}</span>
-                {SHAPE_ICONS[lastShape] ?? <IconSquare />}
+                {SHAPE_ICONS[lastShape as GeoKeys] ?? <IconSquare />}
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-64 p-2 space-y-2">
