@@ -18,12 +18,6 @@ import type {
 } from "@tldraw/tldraw";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import {
   IconLineDashed,
@@ -33,9 +27,64 @@ import {
   IconSquaresDiagonal,
   IconSquaresFilled,
   IconSquaresSelected,
-  IconChevronDown,
+  IconSquare,
+  IconCircle,
+  IconTriangle,
+  IconSquareRotated,
+  IconStar,
+  IconPentagon,
+  IconHexagon,
+  IconOctagon,
+  IconArrowBigLeft,
+  IconArrowBigUp,
+  IconArrowBigDown,
+  IconArrowBigRight,
+  IconCloud,
+  IconSquareX,
+  IconSquareCheck,
+  IconHeart,
 } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { JSX, useEffect, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import React from "react";
+
+const SHAPE_ICONS: Record<string, JSX.Element> = {
+  rectangle: <IconSquare />,
+  ellipse: <IconCircle />,
+  triangle: <IconTriangle />,
+  diamond: <IconSquareRotated />,
+  star: <IconStar />,
+  pentagon: <IconPentagon />,
+  hexagon: <IconHexagon />,
+  octagon: <IconOctagon />,
+  arrowLeft: <IconArrowBigLeft />,
+  arrowUp: <IconArrowBigUp />,
+  arrowDown: <IconArrowBigDown />,
+  arrowRight: <IconArrowBigRight />,
+  cloud: <IconCloud />,
+  boxX: <IconSquareX />,
+  boxCheck: <IconSquareCheck />,
+  heart: <IconHeart />,
+};
+
+const SHAPES_PRESETS = [
+  "rectangle",
+  "ellipse",
+  "triangle",
+  "diamond",
+  "star",
+  "pentagon",
+  "hexagon",
+  "octagon",
+  "arrowLeft",
+  "arrowUp",
+  "arrowDown",
+  "arrowRight",
+  "cloud",
+  "boxX",
+  "boxCheck",
+  "heart",
+];
 
 const COLOR_PRESETS: TLDefaultColorStyle[] = [
   "black",
@@ -72,6 +121,21 @@ const FONT_OPTIONS: TLDefaultFontStyle[] = ["sans", "serif", "draw", "mono"];
 export function StylesPanel({ editor }: { editor: Editor }) {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const tool = editor.getCurrentToolId();
+
+  const [open, setOpen] = useState(false);
+  const [lastShape, setLastShape] = useState("rectangle");
+
+  const handleSelect = (shape: string) => {
+    editor.setCurrentTool("geo");
+    setLastShape(shape);
+    setOpen(false);
+  };
+
+  const formatLabel = (shape: string) => {
+    return shape
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (s) => s.toUpperCase());
+  };
 
   const color = editor.getStyleForNextShape(DefaultColorStyle) ?? "black";
   const fill = editor.getStyleForNextShape(DefaultFillStyle) ?? "solid";
@@ -186,45 +250,32 @@ export function StylesPanel({ editor }: { editor: Editor }) {
           <span className="text-xs w-10 text-right">{Number(opacity())}%</span>
         </div>
       </div>
-
       {showShape && (
         <div className="space-y-1">
           <Label>Shape</Label>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center px-2 py-1 border rounded">
-                <IconChevronDown className="w-4 h-4 mr-1" />
-                {selectedType ?? "Rectángulo"}
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <button className="w-full px-3 py-2 flex items-center justify-between border rounded">
+                <span>{formatLabel(lastShape)}</span>
+                {SHAPE_ICONS[lastShape] ?? <IconSquare />}
               </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {[
-                "rectangle",
-                "ellipse",
-                "triangle",
-                "arrow",
-                "line",
-                "diamond",
-                "polygon",
-              ].map((shape) => (
-                <DropdownMenuItem
-                  key={shape}
-                  onClick={() => {
-                    editor.updateShapes(
-                      editor.getSelectedShapeIds().map((id) => ({
-                        id,
-                        type: shape as any,
-                        props: { ...editor.getShape(id)!.props },
-                      }))
-                    );
-                    editor.setCurrentTool("shape", { shapeType: shape as any });
-                  }}
-                >
-                  {shape.charAt(0).toUpperCase() + shape.slice(1)}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-2 space-y-2">
+              <div className="grid grid-cols-4 gap-2 justify-items-center">
+                {SHAPES_PRESETS.map((shape) => (
+                  <button
+                    key={shape}
+                    onClick={() => handleSelect(shape)}
+                    className="border p-2 rounded hover:bg-muted flex items-center justify-center"
+                  >
+                    {React.cloneElement(SHAPE_ICONS[shape], {
+                      className: "w-5 h-5",
+                    })}
+                  </button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       )}
       {showShape && (
@@ -263,7 +314,7 @@ export function StylesPanel({ editor }: { editor: Editor }) {
                   key={style}
                   onClick={() => setDashStyle(style)}
                   className={cn(
-                    "p-3 border rounded",
+                    "p-2 border rounded",
                     dash === style ? "border-neutral-500" : "border-transparent"
                   )}
                 >
