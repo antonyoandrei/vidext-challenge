@@ -106,7 +106,7 @@ const COLOR_PRESETS: TLDefaultColorStyle[] = [
   "yellow",
 ];
 
-const FILL_TYPES: { value: TLDefaultFillStyle; icon: any }[] = [
+const FILL_TYPES: { value: TLDefaultFillStyle; icon: React.ElementType }[] = [
   { value: "none", icon: IconSquares },
   { value: "semi", icon: IconSquaresDiagonal },
   { value: "solid", icon: IconSquaresFilled },

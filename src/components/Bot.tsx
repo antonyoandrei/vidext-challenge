@@ -125,8 +125,12 @@ export function Bot({ editor }: BotProps) {
       setUserPrompt("");
       setOpen(false);
       toast.success("Image generated successfully!");
-    } catch (err: any) {
-      console.error(err);
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error(err.message);
+      } else {
+        console.error("Unknown error", err);
+      }
     }
   }, [userPrompt, generateImage, editor]);
 
