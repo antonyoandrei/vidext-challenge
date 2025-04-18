@@ -136,7 +136,7 @@ export function PagesMenu({ editor }: { editor: Editor }) {
 
   return (
     <DropdownMenu>
-      <Tooltip delayDuration={400}>
+      <Tooltip delayDuration={300}>
         <TooltipTrigger asChild>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm">

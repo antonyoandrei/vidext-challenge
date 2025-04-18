@@ -35,7 +35,6 @@ import { AssetRecordType, useEditor, useValue } from "@tldraw/tldraw";
 import { useEffect, useRef, useState } from "react";
 import { StylesPanel } from "./StylesPanel";
 import { PagesMenu } from "./PagesMenu";
-import { TooltipProvider } from "@radix-ui/react-tooltip";
 
 export function Toolbar() {
   const editor = useEditor();
@@ -122,7 +121,7 @@ export function Toolbar() {
       <div className="flex items-center space-x-2">
         <PagesMenu editor={editor} />
         <Separator orientation="vertical" className="h-6" />
-        <Tooltip delayDuration={400}>
+        <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" onClick={() => editor.undo()}>
               <IconArrowBackUp />
@@ -132,7 +131,7 @@ export function Toolbar() {
             <p>Undo</p>
           </TooltipContent>
         </Tooltip>
-        <Tooltip delayDuration={400}>
+        <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" onClick={() => editor.redo()}>
               <IconArrowForwardUp />
@@ -142,7 +141,7 @@ export function Toolbar() {
             <p>Redo</p>
           </TooltipContent>
         </Tooltip>
-        <Tooltip delayDuration={400}>
+        <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
@@ -156,7 +155,7 @@ export function Toolbar() {
             <p>Delete</p>
           </TooltipContent>
         </Tooltip>
-        <Tooltip delayDuration={400}>
+        <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
@@ -174,7 +173,7 @@ export function Toolbar() {
         </Tooltip>
       </div>
       <div className="flex items-center space-x-2">
-        <Tooltip delayDuration={400}>
+        <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <Button
               variant={currentTool === "select" ? "default" : "ghost"}
@@ -191,7 +190,7 @@ export function Toolbar() {
             <p>Select</p>
           </TooltipContent>
         </Tooltip>
-        <Tooltip delayDuration={400}>
+        <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <Button
               variant={currentTool === "hand" ? "default" : "ghost"}
@@ -208,7 +207,7 @@ export function Toolbar() {
             <p>Pan</p>
           </TooltipContent>
         </Tooltip>
-        <Tooltip delayDuration={400}>
+        <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <Button
               variant={currentTool === "draw" ? "default" : "ghost"}
@@ -225,7 +224,7 @@ export function Toolbar() {
             <p>Draw</p>
           </TooltipContent>
         </Tooltip>
-        <Tooltip delayDuration={400}>
+        <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <Button
               variant={currentTool === "eraser" ? "default" : "ghost"}
@@ -242,7 +241,7 @@ export function Toolbar() {
             <p>Eraser</p>
           </TooltipContent>
         </Tooltip>
-        <Tooltip delayDuration={400}>
+        <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" onClick={openFileDialog}>
               <IconPaperclip />
@@ -259,7 +258,7 @@ export function Toolbar() {
           className="hidden"
           onChange={handleFileUpload}
         />
-        <Tooltip delayDuration={400}>
+        <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <Button
               variant={currentTool === "text" ? "default" : "ghost"}
@@ -276,7 +275,7 @@ export function Toolbar() {
             <p>Text</p>
           </TooltipContent>
         </Tooltip>
-        <Tooltip delayDuration={400}>
+        <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <Button
               variant={currentTool === "geo" ? "default" : "ghost"}
@@ -295,7 +294,7 @@ export function Toolbar() {
         </Tooltip>
       </div>
       <div className="flex items-center space-x-2">
-        <Tooltip delayDuration={400}>
+        <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <div className="inline-block">
               <Popover open={openStyles} onOpenChange={setOpenStyles}>
@@ -314,7 +313,7 @@ export function Toolbar() {
             <p>Styles</p>
           </TooltipContent>
         </Tooltip>
-        <Tooltip delayDuration={400}>
+        <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
             <div className="inline-block">
               <Popover>

@@ -7,23 +7,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { IconRobot } from "@tabler/icons-react";
 import { trpc } from "@/utils/trpc";
 import { toast } from "sonner";
-import { AssetRecordType, Editor } from "@tldraw/tldraw";
+import { AssetRecordType } from "@tldraw/tldraw";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-
-interface BotProps {
-  editor: Editor;
-}
+import { BotProps } from "@/types/editor";
 
 export function Bot({ editor }: BotProps) {
   const [open, setOpen] = useState(false);
-  const [tooltipOpen, setTooltipOpen] = useState(false);
   const [userPrompt, setUserPrompt] = useState("");
   const generateImage = trpc.generateImage.useMutation();
   const isLoading = generateImage.status === "pending";
@@ -140,22 +135,15 @@ export function Bot({ editor }: BotProps) {
       open={open}
       onOpenChange={(value) => {
         setOpen(value);
-        if (!value) setTooltipOpen(false);
       }}
     >
-      <Tooltip
-        open={tooltipOpen}
-        onOpenChange={setTooltipOpen}
-        delayDuration={400}
-      >
+      <Tooltip delayDuration={300}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
             className="bg-primary scale-130 hover:scale-140 transition-all rounded-full shadow-lg border-2 border-primary-foreground"
-            onPointerLeave={() => setTooltipOpen(false)}
             onClick={() => {
-              setTooltipOpen(false);
               setOpen(true);
             }}
           >
