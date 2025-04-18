@@ -3,7 +3,7 @@
 **pAInt** es un editor de dibujo ligero construido con **Next.js 15** y el motor de canvas **tldraw**.  
 Incluye gestión de páginas, historial (undo/redo), estilos avanzados, zoom con la rueda y un bot de IA que genera imágenes a partir de _prompts_.
 
-[Demo en vivo → paint-mu-one.vercel.app](https://paint-mu-one.vercel.app)
+[Demo en vivo → vidext-challenge.onrender.com](https://vidext-challenge.onrender.com)
 
 ---
 
@@ -82,6 +82,6 @@ src/
 
 La rama `main` se despliega automáticamente a Vercel:
 
-> **https://paint-mu-one.vercel.app**
+> **https://vidext-challenge.onrender.com**
 
 ---
