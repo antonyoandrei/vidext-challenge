@@ -137,7 +137,7 @@ export function PagesMenu({ editor }: { editor: Editor }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm">
-          <IconFile className="mr-1 text-muted-foreground" />
+          <IconFile className="mr-1" />
           {currentPage?.name || ""}
         </Button>
       </DropdownMenuTrigger>
@@ -193,11 +193,11 @@ export function PagesMenu({ editor }: { editor: Editor }) {
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={addPage}>
-          <IconPlus className="mr-2 text-muted-foreground" />
+          <IconPlus className="mr-2 focus:text-accent-foreground" />
           Add page
         </DropdownMenuItem>
         <DropdownMenuItem onClick={deleteCurrentPage}>
-          <IconTrash className="mr-2 text-muted-foreground" />
+          <IconTrash className="mr-2 focus:text-accent-foreground" />
           Delete current page
         </DropdownMenuItem>
       </DropdownMenuContent>

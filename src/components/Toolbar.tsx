@@ -29,6 +29,7 @@ import { useEditor, useValue } from "@tldraw/tldraw";
 import { useEffect, useState } from "react";
 import { StylesPanel } from "./StylesPanel";
 import { PagesMenu } from "./PagesMenu";
+import Image from "next/image";
 
 export function Toolbar() {
   const editor = useEditor();
@@ -64,7 +65,7 @@ export function Toolbar() {
   }, [editor]);
 
   return (
-    <div className="flex items-center justify-between bg-white px-4 py-2 shadow-md">
+    <div className="flex items-center justify-between bg-primary px-14 py-2 shadow-md">
       <div className="flex items-center space-x-2">
         <PagesMenu editor={editor} />
         <Separator orientation="vertical" className="h-6" />

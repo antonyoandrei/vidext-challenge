@@ -45,6 +45,7 @@ import {
   IconSquareX,
   IconSquareCheck,
   IconHeart,
+  IconWriting,
 } from "@tabler/icons-react";
 import { JSX, useEffect, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -152,7 +153,7 @@ export function StylesPanel({ editor }: { editor: Editor }) {
 
   const color = editor.getStyleForNextShape(DefaultColorStyle) ?? "black";
   const fill = editor.getStyleForNextShape(DefaultFillStyle) ?? "solid";
-  const dash = editor.getStyleForNextShape(DefaultDashStyle) ?? "solid";
+  const dash = editor.getStyleForNextShape(DefaultDashStyle) ?? "draw";
   const size = editor.getStyleForNextShape(DefaultSizeStyle) ?? "m";
   const font = editor.getStyleForNextShape(DefaultFontStyle) ?? "sans";
 
@@ -233,8 +234,10 @@ export function StylesPanel({ editor }: { editor: Editor }) {
                   key={colorKey}
                   onClick={() => setColorStyle(colorKey)}
                   className={cn(
-                    "w-6 h-6 rounded-full border",
-                    color === colorKey ? "ring-2 ring-neutral-500" : ""
+                    "w-6 h-6 rounded-full border transition-all duration-150 ease-in-out",
+                    color === colorKey
+                      ? "ring-2 scale-90 ring-offset-1 ring-accent"
+                      : ""
                   )}
                   style={{ backgroundColor: hex }}
                 />
@@ -258,7 +261,7 @@ export function StylesPanel({ editor }: { editor: Editor }) {
               editor.setOpacityForSelectedShapes(decimal);
               editor.setOpacityForNextShapes(decimal);
             }}
-            className="w-full appearance-none h-2 rounded bg-gray-200 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black"
+            className="w-full appearance-none h-2 rounded bg-primary-foreground [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent"
           />
           <span className="text-xs w-10 text-right">{Number(opacity())}%</span>
         </div>
@@ -268,18 +271,18 @@ export function StylesPanel({ editor }: { editor: Editor }) {
           <Label>Shape</Label>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-              <button className="w-full px-3 py-2 flex items-center justify-between border rounded">
+              <button className="w-full px-3 py-2 flex items-center justify-between border rounded bg-white">
                 <span>{formatLabel(lastShape)}</span>
                 {SHAPE_ICONS[lastShape as GeoKeys] ?? <IconSquare />}
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-64 p-2 space-y-2">
-              <div className="grid grid-cols-4 gap-2 justify-items-center">
+              <div className="grid grid-cols-4 gap-2 justify-items-center bg-white">
                 {SHAPES_PRESETS.map((shape) => (
                   <button
                     key={shape}
                     onClick={() => handleSelect(shape)}
-                    className="border p-2 rounded hover:bg-muted flex items-center justify-center"
+                    className="border p-2 rounded hover:bg-primary flex items-center justify-center"
                   >
                     {React.cloneElement(SHAPE_ICONS[shape], {
                       className: "w-5 h-5",
@@ -300,8 +303,10 @@ export function StylesPanel({ editor }: { editor: Editor }) {
                 key={value}
                 onClick={() => setFillStyle(value)}
                 className={cn(
-                  "p-2 border rounded",
-                  fill === value ? "bg-black text-white" : "bg-white text-black"
+                  "p-2 border rounded transition-all duration-150 ease-in-out",
+                  fill === value
+                    ? "bg-accent text-accent-foreground"
+                    : "bg-white text-accent"
                 )}
               >
                 <Icon className="w-5 h-5" />
@@ -313,25 +318,35 @@ export function StylesPanel({ editor }: { editor: Editor }) {
       {showBasic && selectedType !== "text" && (
         <div className="space-y-1">
           <Label>Dash</Label>
-          <div className="flex gap-2">
+          <div className="flex gap-2 text-accent">
             {DASH_OPTIONS.map((style) => {
               const Icon =
                 style === "dashed"
                   ? IconLineDashed
                   : style === "dotted"
                   ? IconLineDotted
-                  : () => <div className="w-6 h-[2px] bg-black rounded-full" />;
+                  : style === "draw"
+                  ? IconWriting
+                  : () => (
+                      <div
+                        className={`w-5 h-[2px] bg-accent transition-all duration-150 ease-in-out ${
+                          dash === style ? "bg-primary" : ""
+                        } rounded-full`}
+                      />
+                    );
 
               return (
                 <button
                   key={style}
                   onClick={() => setDashStyle(style)}
                   className={cn(
-                    "p-2 border rounded",
-                    dash === style ? "border-neutral-500" : "border-transparent"
+                    "p-2 border rounded transition-all duration-150 ease-in-out",
+                    dash === style
+                      ? "bg-accent text-accent-foreground"
+                      : "bg-white text-accent"
                   )}
                 >
-                  <Icon className="w-6 h-6" />
+                  <Icon className="w-5 h-5" />
                 </button>
               );
             })}
@@ -342,16 +357,29 @@ export function StylesPanel({ editor }: { editor: Editor }) {
         <div className="space-y-1">
           <Label>{showText ? "Size" : "Width"}</Label>
           <div className="flex items-center gap-3">
-            {SIZE_OPTIONS.map((s, i) => {
+            {SIZE_OPTIONS.map((s) => {
               const sizeMap = { s: 8, m: 14, l: 20, xl: 26 };
-              const iconSizes = { s: 12, m: 16, l: 22, xl: 28 };
+              const iconSizes = { s: 14, m: 18, l: 22, xl: 26 };
+              const isSelected = size === s;
+
+              const baseClasses = showText
+                ? "border rounded bg-white px-2 py-1 transition-all duration-150 ease-in-out"
+                : "rounded-full border transition-all duration-150 ease-in-out";
+              const highlightClasses =
+                !showText && isSelected
+                  ? "scale-90 ring-2 ring-accent ring-offset-1 shadow-lg"
+                  : "";
+              const unselectedClasses = !isSelected
+                ? "border-transparent opacity-60"
+                : "";
               return (
                 <button
                   key={s}
                   onClick={() => setSizeStyle(s)}
                   className={cn(
-                    "rounded-full border",
-                    size === s ? "border-neutral-500" : "border-transparent"
+                    baseClasses,
+                    highlightClasses,
+                    unselectedClasses
                   )}
                 >
                   {showText ? (
@@ -360,7 +388,7 @@ export function StylesPanel({ editor }: { editor: Editor }) {
                     />
                   ) : (
                     <div
-                      className="bg-black rounded-full"
+                      className="bg-accent rounded-full"
                       style={{
                         width: sizeMap[s],
                         height: sizeMap[s],
@@ -382,8 +410,8 @@ export function StylesPanel({ editor }: { editor: Editor }) {
                 key={f}
                 onClick={() => setFontStyle(f)}
                 className={cn(
-                  "text-sm px-2 py-1 border rounded",
-                  font === f ? "bg-black text-white" : "bg-white text-black"
+                  "text-sm px-2 py-1 border rounded  transition-all duration-150 ease-in-out",
+                  font === f ? "bg-accent text-primary" : "bg-white text-accent"
                 )}
               >
                 {f}
