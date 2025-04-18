@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { trpc } from "@/utils/trpc";
 import "tldraw/tldraw.css";
 import { Toolbar } from "./Toolbar";
+import { Assistant } from "./Bot";
 
 export function Editor() {
   return (
@@ -56,8 +57,13 @@ function EditorContent() {
   }, [snapshot, editor]);
 
   return (
-    <div className="absolute top-0 left-0 right-0 z-50">
-      <Toolbar />
-    </div>
+    <>
+      <div className="absolute top-0 left-0 right-0 z-50">
+        <Toolbar />
+      </div>
+      <div className="absolute bottom-4 left-4 z-50">
+        <Assistant editor={editor} />
+      </div>
+    </>
   );
 }

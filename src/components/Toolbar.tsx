@@ -24,22 +24,69 @@ import {
   IconZoomOut,
   IconZoomScan,
   IconZoomInArea,
+  IconPaperclip,
 } from "@tabler/icons-react";
-import { useEditor, useValue } from "@tldraw/tldraw";
-import { useEffect, useState } from "react";
+import { AssetRecordType, useEditor, useValue } from "@tldraw/tldraw";
+import { useEffect, useRef, useState } from "react";
 import { StylesPanel } from "./StylesPanel";
 import { PagesMenu } from "./PagesMenu";
-import Image from "next/image";
 
 export function Toolbar() {
   const editor = useEditor();
   const [openStyles, setOpenStyles] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const currentTool = useValue(
     "current tool",
     () => editor.getCurrentToolId(),
     [editor]
   );
+
+  const openFileDialog = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const src = reader.result as string;
+      const img = new Image();
+      img.onload = () => {
+        const w = img.naturalWidth;
+        const h = img.naturalHeight;
+        const assetId = AssetRecordType.createId();
+        editor.createAssets([
+          {
+            id: assetId,
+            type: "image",
+            typeName: "asset",
+            props: {
+              name: file.name,
+              src,
+              w,
+              h,
+              mimeType: file.type,
+              isAnimated: false,
+            },
+            meta: {},
+          },
+        ]);
+        const x = (window.innerWidth - w) / 2;
+        const y = (window.innerHeight - h) / 2;
+        editor.createShape({
+          type: "image",
+          x,
+          y,
+          props: { assetId, w, h },
+        });
+      };
+      img.src = src;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
 
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
@@ -131,6 +178,16 @@ export function Toolbar() {
         >
           <IconEraser />
         </Button>
+        <Button variant="ghost" size="icon" onClick={openFileDialog}>
+          <IconPaperclip />
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileUpload}
+        />
         <Button
           variant={currentTool === "text" ? "default" : "ghost"}
           size="icon"
