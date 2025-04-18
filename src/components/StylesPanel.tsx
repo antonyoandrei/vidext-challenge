@@ -164,7 +164,7 @@ export function StylesPanel({ editor }: { editor: Editor }) {
     } else {
       setSelectedType(null);
     }
-  }, [editor.getSelectedShapeIds().join(",")]);
+  }, [editor, editor.getSelectedShapeIds().join(",")]);
 
   const setColorStyle = (value: TLDefaultColorStyle) => {
     editor.setStyleForNextShapes(DefaultColorStyle, value);

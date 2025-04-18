@@ -47,19 +47,19 @@ export function PagesMenu({ editor }: { editor: Editor }) {
   const refresh = () => setPages(editor.getPages());
 
   const addPage = () => {
-    const newPage = editor.createPage({ name: `Page ${pages.length + 1}` });
+    editor.createPage({ name: `Page ${editor.getPages().length + 1}` });
 
-    requestAnimationFrame(() => {
-      const exists = editor.getPages().some((p) => p.id === newPage.id);
-      if (exists) {
+    setTimeout(() => {
+      const allPages = editor.getPages();
+      const newestPage = allPages[allPages.length - 1];
+
+      if (newestPage) {
         editor.selectNone();
-        editor.setCurrentPage(newPage.id as TLPageId);
+        editor.setCurrentPage(newestPage.id);
         saveSnapshot();
-      } else {
-        console.warn("Page not found.");
+        refresh();
       }
-      refresh();
-    });
+    }, 0);
   };
 
   const deleteCurrentPage = () => {
@@ -177,7 +177,13 @@ export function PagesMenu({ editor }: { editor: Editor }) {
                 className="border-b flex-grow mr-2"
               />
             ) : (
-              <DropdownMenuItem onClick={() => editor.setCurrentPage(page.id)}>
+              <DropdownMenuItem
+                onClick={() => {
+                  if (editor.getPages().some((p) => p.id === page.id)) {
+                    editor.setCurrentPage(page.id);
+                  }
+                }}
+              >
                 <span className={page.id === currentPageId ? "font-bold" : ""}>
                   {page.name}
                 </span>

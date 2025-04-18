@@ -68,7 +68,7 @@ export function Bot({ editor }: BotProps) {
     }
 
     return () => window.clearTimeout(timeout);
-  }, [charIndex, typingForward, animIndex, animating]);
+  }, [charIndex, typingForward, animIndex, animating, examples]);
 
   const handlePromptChange = (value: string) => {
     setUserPrompt(value);

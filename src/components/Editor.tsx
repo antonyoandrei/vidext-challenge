@@ -6,12 +6,14 @@ import {
   loadSnapshot,
   getSnapshot,
   TLStoreSnapshot,
+  TLPageId,
 } from "@tldraw/tldraw";
 import { useEffect } from "react";
 import { trpc } from "@/utils/trpc";
 import "tldraw/tldraw.css";
 import { Toolbar } from "./Toolbar";
 import { Bot } from "./Bot";
+import { CustomSnapshot } from "@/types/editor";
 
 export function Editor() {
   return (
@@ -47,10 +49,10 @@ function EditorContent() {
       loadSnapshot(editor.store, snapshot as TLStoreSnapshot);
 
       requestAnimationFrame(() => {
-        const pageId = (snapshot as any)?.metadata?.currentPageId;
+        const pageId = (snapshot as CustomSnapshot)?.metadata?.currentPageId;
         const pageExists = editor.getPages().some((p) => p.id === pageId);
         if (pageId && pageExists) {
-          editor.setCurrentPage(pageId);
+          editor.setCurrentPage(pageId as TLPageId);
         }
       });
     }
