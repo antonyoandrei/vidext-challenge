@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# pAInt ✏️🖌️
 
-## Getting Started
+**pAInt** es un editor de dibujo ligero construido con **Next.js 15** y el motor de canvas **tldraw**.  
+Incluye gestión de páginas, historial (undo/redo), estilos avanzados, zoom con la rueda y un bot de IA que genera imágenes a partir de _prompts_.
 
-First, run the development server:
+[Demo en vivo → paint-mu-one.vercel.app](https://paint-mu-one.vercel.app)
+
+---
+
+## ✨ Funciones principales
+
+| Categoría        | Qué puedes hacer                                                                   |
+| ---------------- | ---------------------------------------------------------------------------------- |
+| **Páginas**      | ver nombre de la página actual · añadir / renombrar / reordenar / eliminar páginas |
+| **Historial**    | undo / redo                                                                        |
+| **Herramientas** | seleccionar · pan · draw · eraser · duplicar · borrar selección                    |
+| **Insertar**     | imágenes locales, texto, 15 formas geométricas predefinidas                        |
+| **Estilos**      | grosor & dash del trazo, tipo de relleno, color, opacidad, tipografías             |
+| **Zoom**         | rueda del ratón, botones _in_, _out_, _fit screen_ y _focus selection_             |
+| **Atajos**       | tecla **Delete**, zoom forzado con la rueda                                        |
+| **IA bot**       | escribe un prompt → inserta PNG 1024×1024 centrado en el lienzo                    |
+
+---
+
+## 📚 Stack tecnológico
+
+| Capa               | Librería                                     |
+| ------------------ | -------------------------------------------- |
+| **Front / UI**     | React 19 · TailwindCSS 4 · shadcn‑ui / Radix |
+| **Canvas**         | @tldraw/tldraw 3                             |
+| **Datos**          | @tanstack/react‑query 5                      |
+| **Backend RPC**    | tRPC 11                                      |
+| **IA**             | OpenAI 4 (DALL‑E / GPT)                      |
+| **Notificaciones** | sonner                                       |
+| **Deploy**         | Vercel                                       |
+
+---
+
+## ▶️ Ejecución local
 
 ```bash
+# 1. Clona el repo
+git clone https://github.com/antonyoandrei/vidext-challenge.git
+cd vidext-challenge
+
+# 2. Instala dependencias
+npm install
+
+# 3. Clave de OpenAI para el bot
+cp .env.example .env
+echo "OPENAI_API_KEY=sk-..." >> .env
+
+# 4. Arranca en modo desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# abre http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Scripts disponibles
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script          | Descripción            |
+| --------------- | ---------------------- |
+| `npm run dev`   | servidor de desarrollo |
+| `npm start`     | ejecuta en local       |
+| `npm run build` | ejecuta build          |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🗂️ Estructura (simplificada)
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+ ├─ components/      # Toolbar, StylesPanel, Bot...
+ ├─ app/             # rutas y API (tRPC)
+ ├─ server/          # tRPC server
+ ├─ utils/           # helpers puros
+ └─ types/           # tipos globales
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🌐 Producción
 
-## Deploy on Vercel
+La rama `main` se despliega automáticamente a Vercel:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+> **https://paint-mu-one.vercel.app**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
