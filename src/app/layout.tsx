@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Providers } from "@/components/Providers";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 
 export default function RootLayout({
@@ -8,7 +9,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <TooltipProvider>
       <Toaster
         toastOptions={{
           style: {
@@ -32,6 +33,6 @@ export default function RootLayout({
           <Providers>{children}</Providers>
         </body>
       </html>
-    </>
+    </TooltipProvider>
   );
 }

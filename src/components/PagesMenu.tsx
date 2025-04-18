@@ -21,6 +21,7 @@ import {
 import { trpc } from "@/utils/trpc";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export function PagesMenu({ editor }: { editor: Editor }) {
   const [pages, setPages] = useState<ReturnType<typeof editor.getPages>>([]);
@@ -135,12 +136,19 @@ export function PagesMenu({ editor }: { editor: Editor }) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm">
-          <IconFile className="mr-1" />
-          {currentPage?.name || ""}
-        </Button>
-      </DropdownMenuTrigger>
+      <Tooltip delayDuration={400}>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm">
+              <IconFile className="mr-1" />
+              {currentPage?.name || ""}
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+          <p>Pages</p>
+        </TooltipContent>
+      </Tooltip>
       <DropdownMenuContent>
         {pages.map((page) => (
           <div

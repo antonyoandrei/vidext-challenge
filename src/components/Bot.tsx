@@ -15,13 +15,15 @@ import { IconRobot } from "@tabler/icons-react";
 import { trpc } from "@/utils/trpc";
 import { toast } from "sonner";
 import { AssetRecordType, Editor } from "@tldraw/tldraw";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
-interface AssistantProps {
+interface BotProps {
   editor: Editor;
 }
 
-export function Assistant({ editor }: AssistantProps) {
+export function Bot({ editor }: BotProps) {
   const [open, setOpen] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   const [userPrompt, setUserPrompt] = useState("");
   const generateImage = trpc.generateImage.useMutation();
   const isLoading = generateImage.status === "pending";
@@ -134,16 +136,36 @@ export function Assistant({ editor }: AssistantProps) {
   }, [userPrompt, generateImage, editor]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="bg-primary scale-130 hover:scale-140 transition-all rounded-full shadow-lg border-2 border-primary-foreground"
-        >
-          <IconRobot />
-        </Button>
-      </DialogTrigger>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        setOpen(value);
+        if (!value) setTooltipOpen(false);
+      }}
+    >
+      <Tooltip
+        open={tooltipOpen}
+        onOpenChange={setTooltipOpen}
+        delayDuration={400}
+      >
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-primary scale-130 hover:scale-140 transition-all rounded-full shadow-lg border-2 border-primary-foreground"
+            onPointerLeave={() => setTooltipOpen(false)}
+            onClick={() => {
+              setTooltipOpen(false);
+              setOpen(true);
+            }}
+          >
+            <IconRobot />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+          <p>pAInt Bot</p>
+        </TooltipContent>
+      </Tooltip>
       <DialogContent className="w-[400px]">
         <DialogHeader>
           <DialogTitle>pAInt Bot</DialogTitle>

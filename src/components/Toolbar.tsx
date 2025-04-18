@@ -26,10 +26,16 @@ import {
   IconZoomInArea,
   IconPaperclip,
 } from "@tabler/icons-react";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 import { AssetRecordType, useEditor, useValue } from "@tldraw/tldraw";
 import { useEffect, useRef, useState } from "react";
 import { StylesPanel } from "./StylesPanel";
 import { PagesMenu } from "./PagesMenu";
+import { TooltipProvider } from "@radix-ui/react-tooltip";
 
 export function Toolbar() {
   const editor = useEditor();
@@ -116,71 +122,136 @@ export function Toolbar() {
       <div className="flex items-center space-x-2">
         <PagesMenu editor={editor} />
         <Separator orientation="vertical" className="h-6" />
-        <Button variant="ghost" size="icon" onClick={() => editor.undo()}>
-          <IconArrowBackUp />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={() => editor.redo()}>
-          <IconArrowForwardUp />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => editor.deleteShapes(editor.getSelectedShapeIds())}
-        >
-          <IconTrash />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => editor.duplicateShapes(editor.getSelectedShapeIds())}
-        >
-          <IconCopy />
-        </Button>
+        <Tooltip delayDuration={400}>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={() => editor.undo()}>
+              <IconArrowBackUp />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Undo</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip delayDuration={400}>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={() => editor.redo()}>
+              <IconArrowForwardUp />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Redo</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip delayDuration={400}>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => editor.deleteShapes(editor.getSelectedShapeIds())}
+            >
+              <IconTrash />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Delete</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip delayDuration={400}>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() =>
+                editor.duplicateShapes(editor.getSelectedShapeIds())
+              }
+            >
+              <IconCopy />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Duplicate</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
       <div className="flex items-center space-x-2">
-        <Button
-          variant={currentTool === "select" ? "default" : "ghost"}
-          size="icon"
-          onClick={() => {
-            editor.selectNone();
-            editor.setCurrentTool("select");
-          }}
-        >
-          <IconPointer />
-        </Button>
-        <Button
-          variant={currentTool === "hand" ? "default" : "ghost"}
-          size="icon"
-          onClick={() => {
-            editor.selectNone();
-            editor.setCurrentTool("hand");
-          }}
-        >
-          <IconHandStop />
-        </Button>
-        <Button
-          variant={currentTool === "draw" ? "default" : "ghost"}
-          size="icon"
-          onClick={() => {
-            editor.selectNone();
-            editor.setCurrentTool("draw");
-          }}
-        >
-          <IconPencil />
-        </Button>
-        <Button
-          variant={currentTool === "eraser" ? "default" : "ghost"}
-          size="icon"
-          onClick={() => {
-            editor.selectNone();
-            editor.setCurrentTool("eraser");
-          }}
-        >
-          <IconEraser />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={openFileDialog}>
-          <IconPaperclip />
-        </Button>
+        <Tooltip delayDuration={400}>
+          <TooltipTrigger asChild>
+            <Button
+              variant={currentTool === "select" ? "default" : "ghost"}
+              size="icon"
+              onClick={() => {
+                editor.selectNone();
+                editor.setCurrentTool("select");
+              }}
+            >
+              <IconPointer />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Select</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip delayDuration={400}>
+          <TooltipTrigger asChild>
+            <Button
+              variant={currentTool === "hand" ? "default" : "ghost"}
+              size="icon"
+              onClick={() => {
+                editor.selectNone();
+                editor.setCurrentTool("hand");
+              }}
+            >
+              <IconHandStop />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Pan</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip delayDuration={400}>
+          <TooltipTrigger asChild>
+            <Button
+              variant={currentTool === "draw" ? "default" : "ghost"}
+              size="icon"
+              onClick={() => {
+                editor.selectNone();
+                editor.setCurrentTool("draw");
+              }}
+            >
+              <IconPencil />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Draw</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip delayDuration={400}>
+          <TooltipTrigger asChild>
+            <Button
+              variant={currentTool === "eraser" ? "default" : "ghost"}
+              size="icon"
+              onClick={() => {
+                editor.selectNone();
+                editor.setCurrentTool("eraser");
+              }}
+            >
+              <IconEraser />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Eraser</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip delayDuration={400}>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={openFileDialog}>
+              <IconPaperclip />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Attach</p>
+          </TooltipContent>
+        </Tooltip>
         <input
           ref={fileInputRef}
           type="file"
@@ -188,69 +259,102 @@ export function Toolbar() {
           className="hidden"
           onChange={handleFileUpload}
         />
-        <Button
-          variant={currentTool === "text" ? "default" : "ghost"}
-          size="icon"
-          onClick={() => {
-            editor.selectNone();
-            editor.setCurrentTool("text");
-          }}
-        >
-          <IconTypography />
-        </Button>
-        <Button
-          variant={currentTool === "geo" ? "default" : "ghost"}
-          size="icon"
-          onClick={() => {
-            editor.selectNone();
-            editor.setCurrentTool("geo");
-          }}
-        >
-          <IconShape />
-        </Button>
+        <Tooltip delayDuration={400}>
+          <TooltipTrigger asChild>
+            <Button
+              variant={currentTool === "text" ? "default" : "ghost"}
+              size="icon"
+              onClick={() => {
+                editor.selectNone();
+                editor.setCurrentTool("text");
+              }}
+            >
+              <IconTypography />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Text</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip delayDuration={400}>
+          <TooltipTrigger asChild>
+            <Button
+              variant={currentTool === "geo" ? "default" : "ghost"}
+              size="icon"
+              onClick={() => {
+                editor.selectNone();
+                editor.setCurrentTool("geo");
+              }}
+            >
+              <IconShape />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Shape</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
       <div className="flex items-center space-x-2">
-        <Popover open={openStyles} onOpenChange={setOpenStyles}>
-          <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <IconPalette />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-64">
-            <StylesPanel editor={editor} />
-          </PopoverContent>
-        </Popover>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <IconZoom className="w-5 h-5" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-48 space-y-2">
-            <div className="flex flex-col gap-2">
-              <Button size="sm" onClick={() => editor.zoomIn()}>
-                <IconZoomIn className="w-4 h-4 mr-1" /> Zoom in
-              </Button>
-              <Button size="sm" onClick={() => editor.zoomOut()}>
-                <IconZoomOut className="w-4 h-4 mr-1" /> Zoom out
-              </Button>
-              <Button size="sm" onClick={() => editor.zoomToFit()}>
-                <IconZoomScan className="w-4 h-4 mr-1" /> Zoom to fit
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => {
-                  const selectedIds = editor.getSelectedShapeIds();
-                  if (selectedIds.length > 0) {
-                    editor.zoomToSelection();
-                  }
-                }}
-              >
-                <IconZoomInArea className="w-4 h-4 mr-1" /> Focus on selection
-              </Button>
+        <Tooltip delayDuration={400}>
+          <TooltipTrigger asChild>
+            <div className="inline-block">
+              <Popover open={openStyles} onOpenChange={setOpenStyles}>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <IconPalette />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-64">
+                  <StylesPanel editor={editor} />
+                </PopoverContent>
+              </Popover>
             </div>
-          </PopoverContent>
-        </Popover>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            <p>Styles</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip delayDuration={400}>
+          <TooltipTrigger asChild>
+            <div className="inline-block">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <IconZoom className="w-5 h-5" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-48 space-y-2">
+                  <div className="flex flex-col gap-2">
+                    <Button size="sm" onClick={() => editor.zoomIn()}>
+                      <IconZoomIn className="w-4 h-4 mr-1" /> Zoom in
+                    </Button>
+                    <Button size="sm" onClick={() => editor.zoomOut()}>
+                      <IconZoomOut className="w-4 h-4 mr-1" /> Zoom out
+                    </Button>
+                    <Button size="sm" onClick={() => editor.zoomToFit()}>
+                      <IconZoomScan className="w-4 h-4 mr-1" /> Zoom to fit
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        const selectedIds = editor.getSelectedShapeIds();
+                        if (selectedIds.length > 0) {
+                          editor.zoomToSelection();
+                        }
+                      }}
+                    >
+                      <IconZoomInArea className="w-4 h-4 mr-1" /> Focus on
+                      selection
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>{" "}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            <p>Zoom</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );

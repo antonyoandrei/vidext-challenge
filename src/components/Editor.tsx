@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import { trpc } from "@/utils/trpc";
 import "tldraw/tldraw.css";
 import { Toolbar } from "./Toolbar";
-import { Assistant } from "./Bot";
+import { Bot } from "./Bot";
 
 export function Editor() {
   return (
@@ -62,7 +62,7 @@ function EditorContent() {
         <Toolbar />
       </div>
       <div className="absolute bottom-4 left-4 z-50">
-        <Assistant editor={editor} />
+        <Bot editor={editor} />
       </div>
     </>
   );
