@@ -26,7 +26,6 @@ export const appRouter = router({
       const response = await openai.images.generate({
         model: "dall-e-3",
         prompt: input.prompt,
-        n: 1,
         quality: "hd",
         size: "1024x1024",
       });
