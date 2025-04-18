@@ -27,7 +27,7 @@ export const appRouter = router({
         model: "dall-e-3",
         prompt: input.prompt,
         n: 1,
-        quality: "hd",
+        quality: "standard",
         size: "1024x1024",
       });
       return { url: response.data[0].url };
