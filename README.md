@@ -65,6 +65,45 @@ npm run dev
 
 ---
 
+## 🧪 Testear la API con Postman
+
+Para probar los endpoints de tRPC con Postman, sigue estos pasos:
+
+1. **Crear petición en Postman**
+
+   - Abre Postman y crea una nueva petición.
+
+2. **Query (GET)**
+
+   - Método: `GET`
+   - URL:
+     ```
+     http://localhost:3000/api/trpc/getDocument
+     ```
+
+3. **Mutación (POST)**
+
+   - Método: `POST`
+   - URL:
+     ```
+     http://localhost:3000/api/trpc/saveDocument
+     ```
+   - Headers:
+     - `Content-Type`: `application/json`
+   - Body (raw JSON):
+     ```json
+     {
+       "input": {
+         "id": "doc1",
+         "content": "Contenido de prueba"
+       }
+     }
+     ```
+
+4. Haz click en **Send** y revisa la respuesta JSON.
+
+---
+
 ## 🗂️ Estructura (simplificada)
 
 ```
