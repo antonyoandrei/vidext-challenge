@@ -1,5 +1,4 @@
 // Configuración base del servidor TRPC
-// Contexto incluye session, prisma y autorización.
 // Aquí definimos el router raíz y un procedimiento sin middleware.
 import { initTRPC } from "@trpc/server";
 import type { Context } from "./context";

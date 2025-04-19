@@ -7,6 +7,8 @@ import { appRouter } from "@/server/trpcRouter";
 import { createContext } from "@/server/context";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
+export const runtime = "edge"; // Usamos Edge Runtime para mejor rendimiento
+
 const handler = (req: Request) =>
   fetchRequestHandler({
     endpoint: "/api/trpc",

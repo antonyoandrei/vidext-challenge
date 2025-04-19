@@ -1,21 +1,17 @@
 import { publicProcedure, router } from "./trpcServer";
 import { z } from "zod";
-import OpenAI from "openai";
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+import { openai } from "./openaiClient";
 
 // Estado en memoria para el snapshot del documento
 let storedSnapshot = {};
 
 export const appRouter = router({
   /**
-   * getDocument
-   * - Recupera el snapshot actual (lectura pública)
+   * - Recupera el snapshot actual
    */
   getDocument: publicProcedure.query(() => storedSnapshot),
 
   /**
-   * saveDocument
    * - Actualiza el snapshot con validación genérica
    */
   saveDocument: publicProcedure
@@ -26,7 +22,6 @@ export const appRouter = router({
     }),
 
   /**
-   * generateImage
    * - Genera imagen con DALL·E 3 según prompt de usuario
    */
   generateImage: publicProcedure
