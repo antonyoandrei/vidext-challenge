@@ -1,7 +1,7 @@
 // Contenedor del lienzo Tldraw y lógica de sincronización con el servidor
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import {
   Tldraw,
   useEditor,
@@ -9,7 +9,6 @@ import {
   getSnapshot,
   TLStoreSnapshot,
   TLPageId,
-  debounce,
 } from "@tldraw/tldraw";
 import { trpc } from "@/utils/trpc";
 import "tldraw/tldraw.css";
