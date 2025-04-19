@@ -81,7 +81,7 @@ src/
 
 ## 🌐 Producción
 
-La rama `main` se despliega automáticamente a Vercel:
+La rama `main` está desplegada en Render:
 
 > **https://vidext-challenge.onrender.com**
 
