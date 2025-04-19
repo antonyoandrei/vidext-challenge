@@ -17,7 +17,7 @@ Incluye gestión de páginas, historial (undo/redo), estilos avanzados, zoom con
 | **Insertar**     | imágenes locales, texto, 15 formas geométricas predefinidas                        |
 | **Estilos**      | grosor & dash del trazo, tipo de relleno, color, opacidad, tipografías             |
 | **Zoom**         | rueda del ratón, botones _in_, _out_, _fit screen_ y _focus selection_             |
-| **Atajos**       | tecla **Delete**, zoom forzado con la rueda                                        |
+| **Atajos**       | tecla **Delete**                                                                   |
 | **IA bot**       | escribe un prompt → inserta PNG 1024×1024 centrado en el lienzo                    |
 
 ---
@@ -32,7 +32,7 @@ Incluye gestión de páginas, historial (undo/redo), estilos avanzados, zoom con
 | **Backend RPC**    | tRPC 11                                      |
 | **IA**             | OpenAI 4 (DALL‑E / GPT)                      |
 | **Notificaciones** | sonner                                       |
-| **Deploy**         | Vercel                                       |
+| **Deploy**         | Render                                       |
 
 ---
 
@@ -71,8 +71,9 @@ npm run dev
 src/
  ├─ components/      # Toolbar, StylesPanel, Bot...
  ├─ app/             # rutas y API (tRPC)
+ ├─ hooks/           # customHooks para componentes
  ├─ server/          # tRPC server
- ├─ utils/           # helpers puros
+ ├─ utils/           # helpers
  └─ types/           # tipos globales
 ```
 

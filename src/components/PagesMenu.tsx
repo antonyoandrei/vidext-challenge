@@ -1,5 +1,7 @@
+// Control de páginas del lienzo: listado, ordenamiento, edición y sincronización con el servidor
 "use client";
 
+// ——— Imports UI y lógica de Tldraw ———
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -8,8 +10,11 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Editor, TLPageId, getSnapshot, getIndexAbove } from "@tldraw/tldraw";
-import { useState, useRef } from "react";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
+import { TLPageId, getSnapshot, getIndexAbove } from "@tldraw/tldraw";
+import { trpc } from "@/utils/trpc";
+import { toast } from "sonner";
+import { useState, useRef, useEffect } from "react";
 import {
   IconFile,
   IconPlus,
@@ -18,24 +23,21 @@ import {
   IconCheck,
   IconGripVertical,
 } from "@tabler/icons-react";
-import { trpc } from "@/utils/trpc";
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { EditorProp } from "@/types/types";
 
-export function PagesMenu({ editor }: { editor: Editor }) {
-  const [pages, setPages] = useState<ReturnType<typeof editor.getPages>>([]);
+export function PagesMenu({ editor }: EditorProp) {
+  // Estado local para reflejar las páginas y edición en curso
+  const [pages, setPages] = useState(editor.getPages());
   const [editingId, setEditingId] = useState<TLPageId | null>(null);
   const [draftName, setDraftName] = useState("");
   const [draggedId, setDraggedId] = useState<TLPageId | null>(null);
   const currentPageId = editor.getCurrentPageId();
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Mutación para persistir snapshot en el servidor
   const saveDoc = trpc.saveDocument.useMutation();
   const saveSnapshot = () => {
     const snapshot = getSnapshot(editor.store);
-    const currentPageId = editor.getCurrentPageId();
-
     saveDoc.mutate({
       ...snapshot,
       metadata: {
@@ -44,24 +46,26 @@ export function PagesMenu({ editor }: { editor: Editor }) {
     });
   };
 
+  // Refresca el listado de páginas desde el editor
   const refresh = () => setPages(editor.getPages());
 
+  // Agrega una nueva página y selecciona inmediatamente
   const addPage = () => {
-    editor.createPage({ name: `Page ${editor.getPages().length + 1}` });
-
+    editor.createPage({ name: `Page ${pages.length + 1}` });
+    // Esperamos al siguiente tick para garantizar la actualización interna
     setTimeout(() => {
-      const allPages = editor.getPages();
-      const newestPage = allPages[allPages.length - 1];
-
-      if (newestPage) {
+      const all = editor.getPages();
+      const latest = all[all.length - 1];
+      if (latest) {
         editor.selectNone();
-        editor.setCurrentPage(newestPage.id);
+        editor.setCurrentPage(latest.id);
         saveSnapshot();
         refresh();
       }
     }, 0);
   };
 
+  // Elimina la página activa, pero evita borrar la última
   const deleteCurrentPage = () => {
     if (pages.length > 1) {
       editor.selectNone();
@@ -73,12 +77,14 @@ export function PagesMenu({ editor }: { editor: Editor }) {
     }
   };
 
+  // Inicia edición de nombre y posiciona el input
   const startEdit = (id: TLPageId, name: string) => {
     setEditingId(id);
     setDraftName(name);
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
+  // Confirma cambio de nombre, persistiendo y refrescando
   const commitEdit = (id: TLPageId) => {
     if (draftName.trim()) {
       editor.selectNone();
@@ -91,29 +97,24 @@ export function PagesMenu({ editor }: { editor: Editor }) {
     setEditingId(null);
   };
 
-  const handleDragStart = (id: TLPageId) => {
-    setDraggedId(id);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
+  // Manejo de drag & drop para reordenar páginas
+  const handleDragStart = (id: TLPageId) => setDraggedId(id);
+  const handleDragOver = (e: React.DragEvent) => e.preventDefault();
   const handleDrop = (targetId: TLPageId) => {
     if (draggedId && draggedId !== targetId) {
-      const fromIndex = pages.findIndex((p) => p.id === draggedId);
-      const toIndex = pages.findIndex((p) => p.id === targetId);
-      if (fromIndex !== -1 && toIndex !== -1) {
-        const reordered = [...pages];
-        const [moved] = reordered.splice(fromIndex, 1);
-        reordered.splice(toIndex, 0, moved);
-
-        reordered.forEach((page, idx) => {
-          const previous = reordered[idx - 1]?.index;
-          const newIndex = previous ? getIndexAbove(previous) : getIndexAbove();
+      const from = pages.findIndex((p) => p.id === draggedId);
+      const to = pages.findIndex((p) => p.id === targetId);
+      if (from !== -1 && to !== -1) {
+        const ordered = [...pages];
+        const [moved] = ordered.splice(from, 1);
+        ordered.splice(to, 0, moved);
+        ordered.forEach((page, idx) => {
+          const prevIndex = ordered[idx - 1]?.index;
+          const newIndex = prevIndex
+            ? getIndexAbove(prevIndex)
+            : getIndexAbove();
           editor.updatePage({ ...page, index: newIndex });
         });
-
         saveSnapshot();
         refresh();
       }
@@ -121,17 +122,11 @@ export function PagesMenu({ editor }: { editor: Editor }) {
     setDraggedId(null);
   };
 
-  const currentPage = pages.find((p) => p.id === currentPageId);
-
+  // Sincronizamos localmente con cambios externos en el store
   useEffect(() => {
     const updatePages = () => setPages(editor.getPages());
-
     updatePages();
-    const cleanup = editor.store.listen(updatePages, {
-      source: "user",
-    });
-
-    return cleanup;
+    return editor.store.listen(updatePages, { source: "user" });
   }, [editor]);
 
   return (
@@ -141,13 +136,11 @@ export function PagesMenu({ editor }: { editor: Editor }) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm">
               <IconFile className="mr-1" />
-              {currentPage?.name || ""}
+              {pages.find((p) => p.id === currentPageId)?.name}
             </Button>
           </DropdownMenuTrigger>
         </TooltipTrigger>
-        <TooltipContent side="bottom">
-          <p>Pages</p>
-        </TooltipContent>
+        <TooltipContent side="bottom">Pages</TooltipContent>
       </Tooltip>
       <DropdownMenuContent>
         {pages.map((page) => (
@@ -159,9 +152,7 @@ export function PagesMenu({ editor }: { editor: Editor }) {
             onDrop={() => handleDrop(page.id)}
             className="flex items-center justify-between"
           >
-            <span className="cursor-grab p-1">
-              <IconGripVertical className="text-muted-foreground" />
-            </span>
+            <IconGripVertical className="cursor-grab p-1 text-muted-foreground" />
             {editingId === page.id ? (
               <input
                 ref={inputRef}
@@ -178,15 +169,10 @@ export function PagesMenu({ editor }: { editor: Editor }) {
               />
             ) : (
               <DropdownMenuItem
-                onClick={() => {
-                  if (editor.getPages().some((p) => p.id === page.id)) {
-                    editor.setCurrentPage(page.id);
-                  }
-                }}
+                onClick={() => editor.setCurrentPage(page.id)}
+                className={page.id === currentPageId ? "font-bold" : ""}
               >
-                <span className={page.id === currentPageId ? "font-bold" : ""}>
-                  {page.name}
-                </span>
+                {page.name}
               </DropdownMenuItem>
             )}
             <button
@@ -197,11 +183,7 @@ export function PagesMenu({ editor }: { editor: Editor }) {
               }
               className="p-1"
             >
-              {editingId === page.id ? (
-                <IconCheck className="text-muted-foreground" />
-              ) : (
-                <IconEdit className="text-muted-foreground" />
-              )}
+              {editingId === page.id ? <IconCheck /> : <IconEdit />}
             </button>
           </div>
         ))}

@@ -1,149 +1,62 @@
+// Panel de estilos del lienzo: gestiona colores, opacidad, formas, relleno, trazo, tamaño y fuente
 "use client";
 
-import {
-  Editor,
-  DefaultColorStyle,
-  DefaultFillStyle,
-  DefaultDashStyle,
-  DefaultSizeStyle,
-  DefaultFontStyle,
-  DefaultColorThemePalette,
-} from "@tldraw/tldraw";
-import type {
-  TLDefaultColorStyle,
-  TLDefaultFillStyle,
-  TLDefaultDashStyle,
-  TLDefaultSizeStyle,
-  TLDefaultFontStyle,
-  TLGeoShape,
-} from "@tldraw/tldraw";
-import { GeoShapeGeoStyle } from "@tldraw/tldraw";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+// ——— Dependencias ———
+import React from "react";
+import { DefaultColorThemePalette } from "@tldraw/tldraw";
 import {
   IconLineDashed,
   IconLineDotted,
   IconTextSize,
-  IconSquares,
-  IconSquaresDiagonal,
-  IconSquaresFilled,
-  IconSquaresSelected,
-  IconSquare,
-  IconCircle,
-  IconTriangle,
-  IconSquareRotated,
-  IconStar,
-  IconPentagon,
-  IconHexagon,
-  IconOctagon,
-  IconArrowBigLeft,
-  IconArrowBigUp,
-  IconArrowBigDown,
-  IconArrowBigRight,
-  IconCloud,
-  IconSquareX,
-  IconSquareCheck,
-  IconHeart,
   IconWriting,
+  IconSquare,
 } from "@tabler/icons-react";
-import { JSX, useEffect, useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import React from "react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
+import { cn } from "@/lib/utils";
 
-type GeoKeys =
-  | "rectangle"
-  | "oval"
-  | "triangle"
-  | "diamond"
-  | "star"
-  | "pentagon"
-  | "hexagon"
-  | "octagon"
-  | "arrow-left"
-  | "arrow-up"
-  | "arrow-down"
-  | "arrow-right"
-  | "cloud"
-  | "x-box"
-  | "check-box"
-  | "heart";
+// ——— Presets y hook centralizado ———
+import { useStyleControls } from "@/hooks/useStyleControls";
+import { EditorProp, GeoKeys } from "@/types/types";
+import {
+  COLOR_PRESETS,
+  DASH_OPTIONS,
+  FILL_TYPES,
+  FONT_OPTIONS,
+  SHAPES_PRESETS,
+  SHAPE_ICONS,
+  SIZE_OPTIONS,
+} from "@/utils/stylesConfig";
 
-const SHAPE_ICONS: Record<GeoKeys, JSX.Element> = {
-  rectangle: <IconSquare />,
-  oval: <IconCircle />,
-  triangle: <IconTriangle />,
-  diamond: <IconSquareRotated />,
-  star: <IconStar />,
-  pentagon: <IconPentagon />,
-  hexagon: <IconHexagon />,
-  octagon: <IconOctagon />,
-  "arrow-left": <IconArrowBigLeft />,
-  "arrow-up": <IconArrowBigUp />,
-  "arrow-down": <IconArrowBigDown />,
-  "arrow-right": <IconArrowBigRight />,
-  cloud: <IconCloud />,
-  "x-box": <IconSquareX />,
-  "check-box": <IconSquareCheck />,
-  heart: <IconHeart />,
-};
+export function StylesPanel({ editor }: EditorProp) {
+  // Hook centralizado para lectura y ajuste de estilos
+  const {
+    tool,
+    selectedType,
+    lastShape,
+    color,
+    fill,
+    dash,
+    size,
+    font,
+    opacity,
+    setColorStyle,
+    setFillStyle,
+    setDashStyle,
+    setSizeStyle,
+    setFontStyle,
+    handleSelect,
+    open,
+    setOpen,
+  } = useStyleControls(editor);
 
-const SHAPES_PRESETS = Object.keys(SHAPE_ICONS) as GeoKeys[];
+  // Condiciones de render según herramienta o selección
+  const showBasic = ["select", "hand", "draw", "eraser", "geo"].includes(tool);
+  const showText = tool === "text" || selectedType === "text";
+  const showShape = tool === "geo" || selectedType === "geo";
 
-const COLOR_PRESETS: TLDefaultColorStyle[] = [
-  "black",
-  "blue",
-  "green",
-  "grey",
-  "light-blue",
-  "light-green",
-  "light-red",
-  "light-violet",
-  "orange",
-  "red",
-  "violet",
-  "white",
-  "yellow",
-];
-
-const FILL_TYPES: { value: TLDefaultFillStyle; icon: React.ElementType }[] = [
-  { value: "none", icon: IconSquares },
-  { value: "semi", icon: IconSquaresDiagonal },
-  { value: "solid", icon: IconSquaresFilled },
-  { value: "pattern", icon: IconSquaresSelected },
-];
-
-const DASH_OPTIONS: TLDefaultDashStyle[] = [
-  "draw",
-  "solid",
-  "dashed",
-  "dotted",
-];
-const SIZE_OPTIONS: TLDefaultSizeStyle[] = ["s", "m", "l", "xl"];
-const FONT_OPTIONS: TLDefaultFontStyle[] = ["sans", "serif", "draw", "mono"];
-
-export function StylesPanel({ editor }: { editor: Editor }) {
-  const [selectedType, setSelectedType] = useState<string | null>(null);
-  const tool = editor.getCurrentToolId();
-
-  const [open, setOpen] = useState(false);
-  const [lastShape, setLastShape] = useState("rectangle");
-
-  const handleSelect = (shape: TLGeoShape["props"]["geo"]) => {
-    editor.setCurrentTool("geo", { oneShot: false });
-    editor.setStyleForNextShapes(GeoShapeGeoStyle, shape);
-    editor.setCurrentTool("geo", { oneShot: false });
-
-    if (editor.getSelectedShapeIds().length > 0) {
-      editor.setCurrentTool("select", { oneShot: false });
-      editor.setStyleForSelectedShapes(GeoShapeGeoStyle, shape);
-    } else {
-      editor.setStyleForNextShapes(GeoShapeGeoStyle, shape);
-    }
-    setLastShape(shape);
-    setOpen(false);
-  };
-
+  // Formatea la clave de la forma geométrica para mostrarla en el botón
   const formatLabel = (shape: string) => {
     return shape
       .replace(/-/g, " ")
@@ -151,76 +64,9 @@ export function StylesPanel({ editor }: { editor: Editor }) {
       .replace(/^./, (s) => s.toUpperCase());
   };
 
-  const color = editor.getStyleForNextShape(DefaultColorStyle) ?? "black";
-  const fill = editor.getStyleForNextShape(DefaultFillStyle) ?? "solid";
-  const dash = editor.getStyleForNextShape(DefaultDashStyle) ?? "draw";
-  const size = editor.getStyleForNextShape(DefaultSizeStyle) ?? "m";
-  const font = editor.getStyleForNextShape(DefaultFontStyle) ?? "sans";
-
-  useEffect(() => {
-    const selected = editor.getSelectedShapes();
-    if (selected.length === 1) {
-      setSelectedType(selected[0].type);
-    } else {
-      setSelectedType(null);
-    }
-  }, [editor, editor.getSelectedShapeIds().join(",")]);
-
-  const setColorStyle = (value: TLDefaultColorStyle) => {
-    editor.setStyleForNextShapes(DefaultColorStyle, value);
-    if (editor.getSelectedShapeIds().length > 0) {
-      editor.setStyleForSelectedShapes(DefaultColorStyle, value);
-    }
-  };
-
-  const setFillStyle = (value: TLDefaultFillStyle) => {
-    editor.setStyleForNextShapes(DefaultFillStyle, value);
-    if (editor.getSelectedShapeIds().length > 0) {
-      editor.setStyleForSelectedShapes(DefaultFillStyle, value);
-    }
-  };
-
-  const setDashStyle = (value: TLDefaultDashStyle) => {
-    editor.setStyleForNextShapes(DefaultDashStyle, value);
-    if (editor.getSelectedShapeIds().length > 0) {
-      editor.setStyleForSelectedShapes(DefaultDashStyle, value);
-    }
-  };
-
-  const setSizeStyle = (value: TLDefaultSizeStyle) => {
-    editor.setStyleForNextShapes(DefaultSizeStyle, value);
-    if (editor.getSelectedShapeIds().length > 0) {
-      editor.setStyleForSelectedShapes(DefaultSizeStyle, value);
-    }
-  };
-
-  const setFontStyle = (value: TLDefaultFontStyle) => {
-    editor.setStyleForNextShapes(DefaultFontStyle, value);
-    if (editor.getSelectedShapeIds().length > 0) {
-      editor.setStyleForSelectedShapes(DefaultFontStyle, value);
-    }
-  };
-
-  const showBasic = [
-    "select",
-    "hand",
-    "draw",
-    "eraser",
-    "pencil",
-    "geo",
-  ].includes(tool);
-  const showText = tool === "text" || selectedType === "text";
-  const showShape = tool === "geo" || selectedType === "geo";
-
-  const opacity = () => {
-    const sharedOpacity = editor.getSharedOpacity();
-    return sharedOpacity.type === "shared"
-      ? Math.round(sharedOpacity.value * 100)
-      : opacity;
-  };
-
   return (
     <div className="space-y-6 p-2">
+      {/* — Colores — */}
       {(showBasic || showText) && (
         <div className="space-y-1">
           <div className="grid grid-cols-5 gap-2">
@@ -246,6 +92,8 @@ export function StylesPanel({ editor }: { editor: Editor }) {
           </div>
         </div>
       )}
+
+      {/* — Opacidad — */}
       <div className="space-y-1">
         <Label>Opacity</Label>
         <div className="flex items-center gap-2">
@@ -266,6 +114,8 @@ export function StylesPanel({ editor }: { editor: Editor }) {
           <span className="text-xs w-10 text-right">{Number(opacity())}%</span>
         </div>
       </div>
+
+      {/* — Forma — */}
       {showShape && (
         <div className="space-y-1">
           <Label>Shape</Label>
@@ -294,6 +144,8 @@ export function StylesPanel({ editor }: { editor: Editor }) {
           </Popover>
         </div>
       )}
+
+      {/* — Relleno — */}
       {showShape && (
         <div className="space-y-1">
           <Label>Fill</Label>
@@ -315,6 +167,8 @@ export function StylesPanel({ editor }: { editor: Editor }) {
           </div>
         </div>
       )}
+
+      {/* — Trazo — */}
       {showBasic && selectedType !== "text" && (
         <div className="space-y-1">
           <Label>Dash</Label>
@@ -353,6 +207,8 @@ export function StylesPanel({ editor }: { editor: Editor }) {
           </div>
         </div>
       )}
+
+      {/* — Tamaño / Ancho — */}
       {(showBasic || showText) && (
         <div className="space-y-1">
           <Label>{showText ? "Size" : "Width"}</Label>
@@ -401,6 +257,8 @@ export function StylesPanel({ editor }: { editor: Editor }) {
           </div>
         </div>
       )}
+
+      {/* — Fuente — */}
       {showText && (
         <div className="space-y-1">
           <Label>Font</Label>

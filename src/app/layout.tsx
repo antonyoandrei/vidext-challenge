@@ -1,3 +1,6 @@
+// Layout raíz de la aplicación
+// - Provee proveedores de estado y UI (toasts, tooltips, themes, etc.)
+// - Define la estructura HTML básica y metadatos
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <TooltipProvider>
+      {/* Configuración global de toasts */}
       <Toaster
         toastOptions={{
           style: {
@@ -21,6 +25,7 @@ export default function RootLayout({
       />
       <html lang="en">
         <head>
+          {/* Metadatos básicos */}
           <meta charSet="UTF-8" />
           <meta
             name="viewport"
@@ -30,6 +35,7 @@ export default function RootLayout({
           <title>pAInt</title>
         </head>
         <body>
+          {/* Contexto global (theme, session, etc.) */}
           <Providers>{children}</Providers>
         </body>
       </html>

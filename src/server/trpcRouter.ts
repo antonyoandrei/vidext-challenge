@@ -2,17 +2,22 @@ import { publicProcedure, router } from "./trpcServer";
 import { z } from "zod";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Estado en memoria para el snapshot del documento
 let storedSnapshot = {};
 
 export const appRouter = router({
-  getDocument: publicProcedure.query(() => {
-    return storedSnapshot;
-  }),
+  /**
+   * getDocument
+   * - Recupera el snapshot actual (lectura pública)
+   */
+  getDocument: publicProcedure.query(() => storedSnapshot),
 
+  /**
+   * saveDocument
+   * - Actualiza el snapshot con validación genérica
+   */
   saveDocument: publicProcedure
     .input(z.record(z.any()))
     .mutation(({ input }) => {
@@ -20,6 +25,10 @@ export const appRouter = router({
       return { success: true };
     }),
 
+  /**
+   * generateImage
+   * - Genera imagen con DALL·E 3 según prompt de usuario
+   */
   generateImage: publicProcedure
     .input(z.object({ prompt: z.string().min(1) }))
     .mutation(async ({ input }) => {
