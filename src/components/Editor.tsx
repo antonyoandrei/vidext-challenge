@@ -33,25 +33,15 @@ function EditorContent() {
   const saveDoc = trpc.saveDocument.useMutation();
   const { data: snapshot } = trpc.getDocument.useQuery();
 
-  // Debounce para evitar enviar demasiadas peticiones
-  const debouncedSave = useRef(
-    debounce((snap: TLStoreSnapshot) => {
-      saveDoc.mutate(snap);
-    }, 500)
-  ).current;
-
-  // Cada cambio en el store se envía al servidor (con debounce)
+  // Cada cambio en el store se envía al servidor
   useEffect(() => {
     if (!editor) return;
     const unsubscribe = editor.store.listen(() => {
-      const snap = getSnapshot(editor.store) as unknown as TLStoreSnapshot;
-      debouncedSave(snap);
+      const snap = getSnapshot(editor.store);
+      saveDoc.mutate(snap);
     });
-    return () => {
-      unsubscribe();
-      debouncedSave.cancel();
-    };
-  }, [editor, debouncedSave]);
+    return () => unsubscribe();
+  }, [editor, saveDoc]);
 
   // Al cargar, aplica el snapshot y restaura la página actual
   useEffect(() => {
